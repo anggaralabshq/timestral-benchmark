@@ -17,6 +17,8 @@ def main() -> None:
     b.add_argument("--cov", action="store_true")
     b.add_argument("--jobs", type=int, default=1)
     sub.add_parser("evaluate", help="hitung metrik dan ringkasan dari results/forecasts")
+    sub.add_parser("speed", help="benchmark CPU foundation model (K3)")
+    sub.add_parser("claims", help="status klaim K1-K4 dari summary.csv + speed.csv")
     a = p.parse_args()
 
     if a.cmd == "download":
@@ -31,6 +33,22 @@ def main() -> None:
         m.to_csv(RESULTS / "metrics.csv", index=False)
         summarize(m).to_csv(RESULTS / "summary.csv", index=False)
         print(f"{len(m)} baris metrik -> {RESULTS}")
+    elif a.cmd == "speed":
+        import pandas as pd
+        from pangan.backtest import load_series
+        from pangan.speed import REPOS, speed
+        series = load_series(RAW)
+        rows = [speed(m, series) for m in REPOS]  # satu proses: model kecil, RAM cukup (±2 GB total)
+        pd.DataFrame(rows).to_csv(RESULTS / "speed.csv", index=False)
+        print(pd.DataFrame(rows).to_string(index=False))
+    elif a.cmd == "claims":
+        import pandas as pd
+        from pangan.claims import judge
+        j = judge(pd.read_csv(RESULTS / "summary.csv"), pd.read_csv(RESULTS / "speed.csv"))
+        j.to_csv(RESULTS / "claims.csv", index=False)
+        md = "| Klaim | Status | Bukti |\n|---|---|---|\n" + "".join(f"| {r.claim} | {r.status} | {r.evidence} |\n" for r in j.itertuples())
+        (RESULTS / "claims.md").write_text(md)
+        print(md)
 
 
 if __name__ == "__main__":
