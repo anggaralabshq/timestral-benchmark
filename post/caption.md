@@ -1,21 +1,21 @@
-# Compact LinkedIn caption (Bahasa Indonesia)
+# Compact LinkedIn caption
 
-Image: `results/chart_lebaran_2026_id.png`
+Image: `results/chart_lebaran_2026.png`
 
 ---
 
-Timestral dari Mistral vs Chronos-2, TimesFM 2.5, ARIMA, ETS, Prophet. Saya uji di harga pangan harian PIHPS (cabai, bawang merah, beras), zero-shot, di laptop tanpa GPU.
+Mistral's Timestral vs Chronos-2, TimesFM 2.5, ARIMA, ETS and Prophet. I tested them on Indonesian daily food prices from PIHPS (chili, shallot, rice), zero-shot, on a laptop with no GPU.
 
-4 klaim, aturan dikunci sebelum eksperimen:
+4 claims, rules locked before the experiment ran:
 
-✅ Paling akurat: error 7% di bawah pesaing terbaik (ETS)
-✅ Versi 5M (21 MB) cuma 6% di belakang versi 209M, 93 ms per seri di CPU
-✅ Interval 80% benar-benar mencakup 80% harga aktual
-❌ Kalender Lebaran malah bikin error naik ~10%. Lonjakan cabai menjelang Lebaran tidak tertangkap model mana pun
+✅ Most accurate: error 7% below the best rival (ETS)
+✅ The 5M version (21 MB) is only 6% behind the 209M, at 93 ms per series on CPU
+✅ Its 80% interval really covers 80% of actual prices
+❌ Adding the Eid holiday calendar made error ~10% worse. No model caught the chili price spike before Eid
 
-Pelajaran: foundation model kecil sudah layak jadi baseline. Tapi jangan percaya satu angka rata-rata, cek periode yang paling penting buat bisnismu.
+Takeaway: small foundation models are now a solid default baseline. But don't trust one average number; check the period that matters most for your business.
 
-Kode dan semua angka, termasuk yang tidak menguntungkan Timestral:
+Code and every number, including the ones that don't favour Timestral:
 https://github.com/anggaralabshq/timestral-benchmark
 
 Data: PIHPS Nasional, Bank Indonesia
