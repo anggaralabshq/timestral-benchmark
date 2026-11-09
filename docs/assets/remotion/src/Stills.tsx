@@ -23,7 +23,7 @@ const MODELS = ['Timestral 209M · 5M', 'Chronos-2', 'TimesFM 2.5', 'AutoARIMA',
 const Wordmark: React.FC<{size: number; mode: Mode}> = ({size, mode}) => (
   <div style={{fontFamily: mono, fontWeight: 700, fontSize: size, letterSpacing: -size * 0.02, lineHeight: 1}}>
     <span style={{color: T[mode].accent}}>›</span>
-    <span style={{color: T[mode].text}}>timestral-pangan</span>
+    <span style={{color: T[mode].text}}>timestral-benchmark</span>
   </div>
 );
 

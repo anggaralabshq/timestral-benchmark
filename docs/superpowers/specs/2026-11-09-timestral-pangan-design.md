@@ -125,7 +125,7 @@ Definisi bersama:
 - Hardware: MacBook **Apple M1, RAM 8 GB**, 8 core. Satu foundation model dimuat dalam satu waktu. Tanpa GPU.
 - Biaya: $0 (RunPod tidak dipakai untuk post ini; saldo $10 disimpan untuk post #2).
 - Python: dikelola `uv` (sudah terpasang, 0.9.15) dengan Python 3.12 (Python sistem 3.14 terlalu baru untuk sebagian dependensi).
-- Repo: GitHub **private** `anggaralabshq/timestral-pangan` (sudah dibuat), dijadikan publik saat post terbit.
+- Repo: GitHub **private** `anggaralabshq/timestral-benchmark` (sudah dibuat; awalnya `timestral-pangan`, di-rename 2026-11-09), dijadikan publik saat post terbit.
 
 ## 11. Keputusan
 

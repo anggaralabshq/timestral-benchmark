@@ -2,7 +2,7 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/banner-dark.png">
-  <img src="docs/assets/banner-light.png" width="100%" alt="timestral-pangan: does Timestral hold up on Indonesian food prices? Timestral compared with Chronos-2, TimesFM 2.5, AutoARIMA, Prophet, ETS and seasonal naive">
+  <img src="docs/assets/banner-light.png" width="100%" alt="timestral-benchmark: does Timestral hold up on Indonesian food prices? Timestral compared with Chronos-2, TimesFM 2.5, AutoARIMA, Prophet, ETS and seasonal naive">
 </picture>
 
 ### An honest, reproducible benchmark of Timestral against other forecasting approaches on Indonesian daily food prices
@@ -38,7 +38,7 @@ This repository answers that for four staple commodities, without taking sides:
 **1. Install**
 
 ```bash
-git clone https://github.com/anggaralabshq/timestral-pangan.git && cd timestral-pangan
+git clone https://github.com/anggaralabshq/timestral-benchmark.git && cd timestral-benchmark
 uv sync
 ```
 
