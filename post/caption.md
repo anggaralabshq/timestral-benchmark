@@ -4,22 +4,20 @@ Image: `results/chart_lebaran_2026.png`
 
 ---
 
-Every year before Eid, chili prices in Indonesia jump. Could the newest time-series AI see it coming?
+Mistral is known for LLMs. Now it has a time-series forecasting model, Timestral. Is it actually good, or just a new name on the leaderboard?
 
-Mistral just released Timestral. I put it against Chronos-2, TimesFM 2.5, ARIMA, ETS and Prophet on daily PIHPS food prices (chili, shallot, rice). Zero-shot, on a laptop, no GPU. Rules locked before the first run.
+I benchmarked it against Chronos-2 (Amazon), TimesFM 2.5 (Google) and the classics (ARIMA, ETS, Prophet). Zero-shot, CPU only, 4 claims with pass/fail rules locked before the first run.
 
-✅ Most accurate overall: error 7% below the best rival (ETS)
-✅ The 5M version (21 MB) is only 6% behind the 209M, at 93 ms per series on CPU
-✅ Its 80% interval really covers 80% of actual prices
-❌ The Eid spike: no model saw it coming, and adding the holiday calendar made Timestral ~10% worse
+✅ Accuracy: most accurate on average, error 7% below the best rival
+✅ Size: the 5M version (21 MB) is only 6% behind the 209M, and the fastest model at 93 ms per series
+✅ Uncertainty: its 80% interval really covers 80%. Chronos-2 and TimesFM are overconfident (65–70%)
+❌ Calendar input: adding known events made it worse in the period they should help most
 
-So the new model wins on average and misses the weeks that matter most.
-
-Takeaway: small foundation models are now a solid default baseline. Just don't trust one average number; test the period your business actually cares about.
+Verdict: Mistral's first time-series model is legit. It beats Google's and Amazon's models here, and the tiny version is good enough for most use. But the covariate feature isn't there yet.
 
 Code and every number, including the ones that don't favour Timestral:
 https://github.com/anggaralabshq/timestral-benchmark
 
-Data: PIHPS Nasional, Bank Indonesia
+Tested on daily food prices (PIHPS, Bank Indonesia).
 
-#TimeSeries #Forecasting #MachineLearning #DataScience
+#TimeSeries #Forecasting #MachineLearning #Mistral
