@@ -1,0 +1,33 @@
+[project]
+name = "pangan"
+version = "0.1.0"
+description = "Benchmark Timestral vs model forecasting lain pada harga pangan Indonesia (PIHPS)"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "pandas>=2.2",
+    "numpy>=1.26",
+    "requests>=2.32",
+    "pyarrow>=17",
+    "statsforecast>=2.0",
+    "prophet>=1.1.6",
+    "matplotlib>=3.9",
+    "chronos-forecasting>=2.0",
+    "timestral @ git+https://github.com/mistralai/timestral.git",
+    "timesfm[torch] @ git+https://github.com/google-research/timesfm.git",
+    # ponytail: timesfm[xreg] pins jax[cuda]; plain jax + sklearn is what XReg needs on CPU
+    "jax>=0.4",
+    "scikit-learn>=1.5",
+]
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.pytest.ini_options]
+markers = ["slow: downloads model weights"]
