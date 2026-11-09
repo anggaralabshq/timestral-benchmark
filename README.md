@@ -43,11 +43,11 @@ Run on 2026-11-09: 93 weekly origins × 4 commodities, 28-day forecasts, MacBook
 **What this means**
 
 - **Timestral-209M is the most accurate model on average.** Its 28-day MASE is 22% below seasonal naive and 7% below the best rival (AutoETS), and its CRPS (0.700) beats the best rival (TimesFM 2.5, 0.735).
-- **Around Eid al-Fitr, no foundation model beats plain AutoETS (0.851).** The holiday calendar made Timestral *worse* in the Eid window (0.972 vs 0.885 without it), even though it helps slightly across the year. The chart below is that window: every model missed the run-up in chili prices.
+- **Around Eid al-Fitr, plain AutoETS has the lowest point error.** In the Eid window no foundation model beats its MASE (0.851). On CRPS Timestral-209M is still best (0.808 without the calendar, 0.893 with it, ETS 0.929). The holiday calendar made Timestral *worse* in that window (MASE 0.972 vs 0.885 without it), even though it helps slightly across the year. The chart below is that window: every model missed the run-up in chili prices.
 - **The 21 MB model is good enough.** Timestral-5M is 6% behind the 209M, still ahead of every non-Timestral model on average, and the fastest at 93 ms per series on CPU. The 209M is the slowest of the four foundation models (1.6 s per series).
 - **Timestral's intervals are honest.** Its 80% and 90% intervals cover 80% and 92% of actual prices. Chronos-2 (65%) and TimesFM 2.5 (70%) are overconfident, and Prophet (42%) much more so.
 
-<img src="results/chart_lebaran_2026.png" width="70%" alt="Red bird's eye chili price before Eid al-Fitr 2026: actual prices rise from about 75 to 94 thousand rupiah per kg, while the Timestral 209M forecast from 2 March falls toward 59 thousand and the AutoETS forecast falls toward 69 thousand; the actual price stays above Timestral's 80% interval from mid-March">
+<img src="results/chart_lebaran_2026.png" width="70%" alt="Red bird's eye chili price before Eid al-Fitr 2026: actual prices rise from about 75 to 94 thousand rupiah per kg, while the Timestral 209M forecast from 2 March falls toward 59 thousand and the AutoETS forecast falls toward 69 thousand; the actual price is above Timestral's 0.9 quantile from the first forecast day">
 
 *Commodity and origin were chosen by fixed rules before looking at model results: the chili with the largest pre-Eid jump, and the last Monday at least 14 days before Eid al-Fitr 2026.*
 
@@ -85,7 +85,18 @@ Run on 2026-11-09: 93 weekly origins × 4 commodities, 28-day forecasts, MacBook
 
 </details>
 
-**Sensitivity check, not used for the verdicts.** Following the spec, models that accept missing values received NaN on weekends. Chronos-2 does noticeably better with forward-filled input (MASE 0.847, CRPS 0.728), while Timestral does not change (0.794). Even then Chronos-2 stays behind Timestral-209M, so K1 does not change. See `results/sensitivity/summary.csv`.
+**Per commodity** (28-day MASE ratio to seasonal naive; mean rank among all 14 configurations, 1 is best)
+
+| Commodity | Timestral-209M + calendar | Best other configuration | Mean rank of Timestral-209M + calendar |
+|---|---|---|---|
+| Curly red chili | 0.819 | 0.805 Timestral-5M | 6.2 |
+| Red bird's eye chili | 0.739 | 0.782 Timestral-5M | 5.4 |
+| Shallot | 0.693 | 0.701 Timestral-209M, no calendar | 5.4 |
+| Medium rice | 0.876 | 0.851 Timestral-209M, no calendar | 5.9 |
+
+Across all series Timestral-209M has the best mean rank (5.7 with the calendar, 5.9 without), but no configuration wins most origins (the most frequent winner, Timestral-209M with the calendar, is best at 13% of them): the low ratios come from fewer large misses, not from winning every week.
+
+**Sensitivity check, not used for the verdicts.** Following the spec, models that accept missing values received NaN on weekends. One exception: TimesFM 2.5 always gets forward-filled input, because its covariate path (XReg) needs a filled target and both paths are kept alike; this favours TimesFM slightly (MASE 0.843 vs 0.854). Chronos-2 does noticeably better with forward-filled input (MASE 0.847, CRPS 0.728), while Timestral's MASE does not change (0.794) but its coverage drops to 71% and 85%. Even then Chronos-2 stays behind Timestral-209M, so K1 does not change. See `results/sensitivity/summary.csv`.
 
 ## Quick start
 
@@ -127,12 +138,13 @@ Each step can run on its own:
 
 | Command | What it does |
 |---|---|
-| `python -m tsbench download` | Fetch PIHPS monthly files into `data/raw/` (cached; the current month is always refetched) |
+| `python -m tsbench download` | Fetch PIHPS monthly files into `data/raw/` (cached; a month cached before it ended is refetched) |
 | `python -m tsbench backtest --model NAME [--cov] [--jobs N]` | Rolling-origin backtest for one model, written to `results/forecasts/` |
 | `python -m tsbench evaluate` | Per-origin metrics (`results/metrics.csv`) and the summary (`results/summary.csv`) |
 | `python -m tsbench speed` | CPU load time and latency of the foundation models (`results/speed.csv`) |
 | `python -m tsbench claims` | Claim verdicts (`results/claims.csv`, `results/claims.md`) |
-| `python -m tsbench plot` | The headline chart (`results/chart_lebaran_2026.png`) |
+| `python -m tsbench plot` | The headline chart in English and Indonesian (`results/chart_lebaran_2026*.png`) |
+| `python -m tsbench sensitivity` | Forward-filled-input rerun of Chronos-2 and Timestral-209M (`results/sensitivity/`), not used for the verdicts |
 
 Model names: `snaive`, `ets`, `arima`, `prophet`, `timestral_5m`, `timestral_209m`, `chronos2`, `timesfm25`. Run each foundation model in its own process to stay within 8 GB of RAM; `all` does this for you.
 

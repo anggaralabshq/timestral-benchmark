@@ -153,7 +153,9 @@ def _timesfm():
 
 def timesfm25(history, horizon, cov=None):
     m = _timesfm()
-    y = fill_for_model(history).to_numpy(dtype=float)  # TimesFM tidak menerima NaN
+    # forecast() would interpolate NaN itself, but XReg needs filled targets; forward-fill both paths alike.
+    # Deviation from spec §5 that favours TimesFM (review check: MASE 0.843 ffill vs 0.854 with NaN).
+    y = fill_for_model(history).to_numpy(dtype=float)
     if cov is None:
         _, q = m.forecast(horizon=horizon, inputs=[y])
         q = q[0][-horizon:]  # return_backcast=True: output = backcast + forecast; forecast is the tail

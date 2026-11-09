@@ -14,7 +14,7 @@ Hasilnya (372 forecast 28 hari per model):
 
 ✅ Akurasi: Timestral-209M paling akurat secara rata-rata. Error 22% di bawah baseline naive, 7% lebih baik dari pesaing terbaik (ETS).
 
-❌ Kalender hari besar: justru tidak membantu saat paling dibutuhkan. Di sekitar Lebaran, memasukkan kalender membuat error Timestral naik ~10%. Di periode itu, ETS klasik malah yang terbaik. Grafik di bawah: semua model gagal menangkap lonjakan cabai rawit menjelang Lebaran 2026.
+❌ Kalender hari besar: justru tidak membantu saat paling dibutuhkan. Di sekitar Lebaran, memasukkan kalender membuat error Timestral naik ~10%. Di periode itu, error titik ETS klasik malah yang terendah (walau rentang ketidakpastian Timestral tetap paling baik). Grafik di bawah: semua model gagal menangkap lonjakan cabai rawit menjelang Lebaran 2026.
 
 ✅ Model kecil: versi 5M (21 MB) hanya 6% di belakang versi 209M dan tetap mengalahkan semua model non-Timestral. Cukup 93 ms per seri di CPU.
 

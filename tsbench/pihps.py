@@ -8,7 +8,7 @@ from pathlib import Path
 import pandas as pd
 import requests
 
-URL = "https://www.bi.go.id/hargatsbench/WebSite/TabelHarga/GetGridDataKomoditas"
+URL = "https://www.bi.go.id/hargapangan/WebSite/TabelHarga/GetGridDataKomoditas"
 
 # Dari GetRefCommodityAndCategory (dicek 2026-11-09)
 COMMODITIES = {
@@ -60,14 +60,17 @@ def download(raw_dir: Path, start: date, end: date, session=None) -> None:
     if session is None:
         session = requests.Session()
         session.headers["User-Agent"] = "Mozilla/5.0 (timestral-benchmark)"
-    current = f"{date.today():%Y-%m}"
     for month in pd.period_range(start, end, freq="M"):
+        month_end = month.end_time.date()
         for cid in COMMODITIES.values():
             f = raw_dir / f"{cid}_{month}.json"
-            if f.exists() and str(month) != current:  # bulan berjalan selalu di-fetch ulang
+            # cache only counts if written after the month ended; otherwise it is partial (or the current month)
+            if f.exists() and date.fromtimestamp(f.stat().st_mtime) > month_end:
                 continue
             payload = fetch_month(cid, month.year, month.month, session)
-            f.write_text(json.dumps(payload, ensure_ascii=False))
+            tmp = f.with_suffix(".tmp")
+            tmp.write_text(json.dumps(payload, ensure_ascii=False))
+            tmp.replace(f)  # atomic: an interrupted run never leaves truncated JSON
             time.sleep(1.0)
 
 

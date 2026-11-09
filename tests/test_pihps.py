@@ -69,3 +69,23 @@ def test_fetch_month_retries_then_raises(tmp_path):
     with pytest.raises(RuntimeError):
         download(tmp_path, date(2026, 10, 1), date(2026, 10, 31), session=s)
     assert list(tmp_path.iterdir()) == []
+
+
+def test_url_matches_spec():
+    # Regression: the pangan→tsbench rename rewrote the BI path segment "hargapangan"
+    assert pihps.URL == "https://www.bi.go.id/hargapangan/WebSite/TabelHarga/GetGridDataKomoditas"
+
+
+def test_download_refetches_month_cached_before_it_ended(tmp_path):
+    # A file written mid-month holds a partial month; it must be completed on a later run
+    import os
+    from datetime import datetime
+    partial = {cid: tmp_path / f"{cid}_2026-10.json" for cid in COMMODITIES.values()}
+    for f in partial.values():
+        f.write_text('{"data": []}')
+        mid = datetime(2026, 10, 15).timestamp()
+        os.utime(f, (mid, mid))
+    s = FakeSession({"data": []})
+    download(tmp_path, date(2026, 10, 1), date(2026, 10, 31), session=s)
+    assert len(s.calls) == len(COMMODITIES)
+    assert not list(tmp_path.glob("*.tmp"))

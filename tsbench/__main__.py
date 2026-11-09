@@ -11,7 +11,7 @@ def main() -> None:
     sub = p.add_subparsers(dest="cmd", required=True)
     d = sub.add_parser("download", help="ambil data PIHPS ke data/raw")
     d.add_argument("--start", type=date.fromisoformat, default=date(2018, 1, 1))
-    d.add_argument("--end", type=date.fromisoformat, default=date.today())
+    d.add_argument("--end", type=date.fromisoformat, default=date(2026, 11, 9), help="default: published data cut-off")
     b = sub.add_parser("backtest", help="rolling-origin backtest untuk satu model")
     b.add_argument("--model", required=True)
     b.add_argument("--cov", action="store_true")
@@ -20,6 +20,7 @@ def main() -> None:
     sub.add_parser("speed", help="benchmark CPU foundation model (K3)")
     sub.add_parser("claims", help="status klaim K1-K4 dari summary.csv + speed.csv")
     sub.add_parser("plot", help="grafik utama Lebaran 2026")
+    sub.add_parser("sensitivity", help="Chronos-2 and Timestral-209M with forward-filled input (not used for verdicts)")
     sub.add_parser("all", help="download -> backtest semua -> evaluate -> speed -> claims -> plot")
     a = p.parse_args()
     if a.cmd == "all":
@@ -30,7 +31,7 @@ def main() -> None:
         for name, (_, cov) in MODELS.items():
             jobs = [] if name in FOUNDATION else ["--jobs", "6"]
             steps += [["backtest", "--model", name, *jobs]] + ([["backtest", "--model", name, "--cov", *jobs]] if cov else [])
-        steps += [["evaluate"], ["speed"], ["claims"], ["plot"]]
+        steps += [["evaluate"], ["speed"], ["claims"], ["plot"], ["sensitivity"]]
         for st in steps:  # proses terpisah per langkah: satu foundation model per proses (RAM 8 GB)
             print(">>", " ".join(st), flush=True)
             subprocess.run([sys.executable, "-m", "tsbench", *st], check=True)
@@ -64,6 +65,19 @@ def main() -> None:
         md = "| Claim | Verdict | Evidence |\n|---|---|---|\n" + "".join(f"| {r.claim} | {r.status} | {r.evidence} |\n" for r in j.itertuples())
         (RESULTS / "claims.md").write_text(md)
         print(md)
+    elif a.cmd == "sensitivity":
+        import shutil
+        from tsbench.backtest import evaluate, load_series, run, summarize
+        from tsbench.models import MODELS, fill_for_model
+        out, series = RESULTS / "sensitivity", load_series(RAW)
+        (out / "forecasts").mkdir(parents=True, exist_ok=True)
+        shutil.copy(RESULTS / "forecasts" / "snaive__nocov.parquet", out / "forecasts")
+        for name in ("chronos2", "timestral_209m"):
+            fn = MODELS[name][0]
+            run(f"{name}_ffill", False, series, out,
+                models={f"{name}_ffill": (lambda h, H, c, fn=fn: fn(fill_for_model(h), H, c), False)})
+        summarize(evaluate(out / "forecasts", series)).to_csv(out / "summary.csv", index=False)
+        print(out / "summary.csv")
     elif a.cmd == "plot":
         import pandas as pd
         from tsbench.backtest import load_series

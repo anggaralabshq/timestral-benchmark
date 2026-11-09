@@ -63,3 +63,20 @@ def test_summarize_relative_to_snaive():
     r = s[(s.model == "x") & (s.slice == "all")].iloc[0]
     assert r.rel_mase == pytest.approx(0.5) and r.rel_wql == pytest.approx(0.5) and r.n == 2
     assert s[(s.model == "x") & (s.slice == "lebaran")].iloc[0].n == 1
+
+
+def test_run_pins_origins_to_as_of_date(tmp_path):
+    # Reruns after 2026-11-09 must reproduce the published 93 origins, not add new ones
+    longer = {"beras": pd.Series(15000.0, index=pd.date_range("2022-01-01", "2027-03-31", freq="D"), name="beras")}
+    df = pd.read_parquet(run("fake", False, longer, tmp_path, models={"fake": (_fake([]), False)}))
+    assert df.origin.max() == pd.Timestamp("2026-10-12") and df.origin.nunique() == 93
+
+
+def test_summarize_adds_commodity_slices_and_mean_rank():
+    base = pd.DataFrame({"model": "snaive", "cov": False, "commodity": ["beras", "cabai_merah"], "origin": [1, 1],
+                         "horizon": 28, "mase": [2.0, 4.0], "wql": [0.2, 0.4], "cov80": 0.8, "cov90": 0.9,
+                         "lebaran": False})
+    other = base.assign(model="x", mase=[1.0, 8.0], wql=[0.1, 0.8])
+    s = summarize(pd.concat([base, other])).set_index(["model", "slice"])
+    assert s.loc[("x", "beras")].rel_mase == pytest.approx(0.5) and s.loc[("x", "cabai_merah")].rel_mase == pytest.approx(2.0)
+    assert s.loc[("x", "all")].mean_rank == pytest.approx(1.5) and s.loc[("snaive", "beras")].mean_rank == 2.0

@@ -14,6 +14,7 @@ from tsbench.metrics import EXTRA_Q, QUANTILES, coverage, mase, sort_quantiles, 
 HISTORY = 1024
 HORIZON = 28
 FIRST_ORIGIN = date(2025, 1, 6)
+AS_OF = date(2026, 11, 9)  # data cut-off of the published run; pinned so reruns reproduce it
 LEBARAN_WINDOWS = [(date(2025, 3, 31) - timedelta(days=45), date(2025, 3, 31)),
                    (date(2026, 3, 20) - timedelta(days=45), date(2026, 3, 20))]
 QCOLS = [f"q{q}" for q in sorted(QUANTILES + EXTRA_Q)]
@@ -57,7 +58,7 @@ def run(model: str, use_cov: bool, series: dict[str, pd.Series], out_dir: Path, 
         from tsbench.models import MODELS as models
     fn, supports = models[model]
     assert supports or not use_cov, f"{model} tidak mendukung covariates"
-    last = min(s.dropna().index[-1] for s in series.values()).date()
+    last = min(min(s.dropna().index[-1] for s in series.values()).date(), AS_OF)
     tasks = [(fn, use_cov, n, s, o) for n, s in series.items() for o in origins(last)]
     if jobs > 1:  # ponytail: proses paralel hanya untuk model statistik; foundation model sudah multi-thread
         for k in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "VECLIB_MAXIMUM_THREADS", "NUMBA_NUM_THREADS"):
@@ -104,9 +105,12 @@ def summarize(metrics: pd.DataFrame) -> pd.DataFrame:
     base = metrics[(metrics.model == "snaive") & ~metrics["cov"]][key + ["mase", "wql"]]
     m = metrics.merge(base, on=key, suffixes=("", "_base"))
     m["r_mase"], m["r_wql"] = m.mase / m.mase_base, m.wql / m.wql_base
+    m["rank"] = m.groupby(key).mase.rank(method="average")  # among all model configs, per commodity×origin×horizon
+    slices = [("all", m), ("lebaran", m[m.lebaran])] + [(c, g) for c, g in m.groupby("commodity")]
     out = []
-    for sl, part in [("all", m), ("lebaran", m[m.lebaran])]:
+    for sl, part in slices:
         for (model, cov, H), g in part.groupby(["model", "cov", "horizon"]):
             out.append({"model": model, "cov": cov, "slice": sl, "horizon": H, "rel_mase": _geo(g.r_mase),
-                        "rel_wql": _geo(g.r_wql), "cov80": g.cov80.mean(), "cov90": g.cov90.mean(), "n": len(g)})
+                        "rel_wql": _geo(g.r_wql), "cov80": g.cov80.mean(), "cov90": g.cov90.mean(),
+                        "mean_rank": g["rank"].mean(), "n": len(g)})
     return pd.DataFrame(out)
