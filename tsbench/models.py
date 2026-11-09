@@ -14,7 +14,7 @@ from typing import Callable
 import numpy as np
 import pandas as pd
 
-from pangan.metrics import EXTRA_Q, QUANTILES
+from tsbench.metrics import EXTRA_Q, QUANTILES
 
 FOUNDATION = {"timestral_5m", "timestral_209m", "chronos2", "timesfm25"}
 LEVELS = (20, 40, 60, 80, 90)  # interval simetris -> kuantil 0.05..0.95

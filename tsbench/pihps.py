@@ -8,7 +8,7 @@ from pathlib import Path
 import pandas as pd
 import requests
 
-URL = "https://www.bi.go.id/hargapangan/WebSite/TabelHarga/GetGridDataKomoditas"
+URL = "https://www.bi.go.id/hargatsbench/WebSite/TabelHarga/GetGridDataKomoditas"
 
 # Dari GetRefCommodityAndCategory (dicek 2026-11-09)
 COMMODITIES = {
@@ -59,7 +59,7 @@ def download(raw_dir: Path, start: date, end: date, session=None) -> None:
     raw_dir.mkdir(parents=True, exist_ok=True)
     if session is None:
         session = requests.Session()
-        session.headers["User-Agent"] = "Mozilla/5.0 (pangan-benchmark)"
+        session.headers["User-Agent"] = "Mozilla/5.0 (timestral-benchmark)"
     current = f"{date.today():%Y-%m}"
     for month in pd.period_range(start, end, freq="M"):
         for cid in COMMODITIES.values():

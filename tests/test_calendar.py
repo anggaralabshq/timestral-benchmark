@@ -1,6 +1,6 @@
 import pandas as pd
 
-from pangan.calendar import EVENTS, covariates
+from tsbench.calendar import EVENTS, covariates
 
 
 def test_lebaran_2025_features():

@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from pangan.backtest import HISTORY, HORIZON
-from pangan.calendar import covariates
+from tsbench.backtest import HISTORY, HORIZON
+from tsbench.calendar import covariates
 
 REPOS = {
     "timestral_5m": "mistralai/Timestral-5M",
@@ -19,7 +19,7 @@ REPOS = {
 
 
 def _loader(model: str):
-    from pangan import models as m
+    from tsbench import models as m
     return {"timestral_5m": lambda: m._timestral(REPOS["timestral_5m"]),
             "timestral_209m": lambda: m._timestral(REPOS["timestral_209m"]),
             "chronos2": m._chronos2, "timesfm25": m._timesfm}[model]
@@ -33,7 +33,7 @@ def _file_mb(repo: str) -> float:
 
 
 def speed(model: str, series: dict[str, pd.Series], runs: int = 5) -> dict:
-    from pangan.models import MODELS
+    from tsbench.models import MODELS
     fn = MODELS[model][0]
     loader = _loader(model)
     t0 = time.perf_counter()

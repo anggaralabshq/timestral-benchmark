@@ -1,6 +1,6 @@
 import pandas as pd
 
-from pangan.claims import judge
+from tsbench.claims import judge
 
 RIVALS = ["snaive", "ets", "arima", "prophet", "chronos2", "timesfm25"]
 

@@ -4,8 +4,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from pangan.backtest import evaluate, in_lebaran_window, origins, run, summarize
-from pangan.metrics import EXTRA_Q, QUANTILES
+from tsbench.backtest import evaluate, in_lebaran_window, origins, run, summarize
+from tsbench.metrics import EXTRA_Q, QUANTILES
 
 idx = pd.date_range("2022-01-01", "2026-11-09", freq="D")
 rng = np.random.default_rng(1)

@@ -921,49 +921,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pangan"
-version = "0.1.0"
-source = { editable = "." }
-dependencies = [
-    { name = "chronos-forecasting" },
-    { name = "jax" },
-    { name = "matplotlib" },
-    { name = "numpy" },
-    { name = "pandas" },
-    { name = "prophet" },
-    { name = "pyarrow" },
-    { name = "requests" },
-    { name = "scikit-learn" },
-    { name = "statsforecast" },
-    { name = "timesfm", extra = ["torch"] },
-    { name = "timestral" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "pytest" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "chronos-forecasting", specifier = ">=2.0" },
-    { name = "jax", specifier = ">=0.4" },
-    { name = "matplotlib", specifier = ">=3.9" },
-    { name = "numpy", specifier = ">=1.26" },
-    { name = "pandas", specifier = ">=2.2" },
-    { name = "prophet", specifier = ">=1.1.6" },
-    { name = "pyarrow", specifier = ">=17" },
-    { name = "requests", specifier = ">=2.32" },
-    { name = "scikit-learn", specifier = ">=1.5" },
-    { name = "statsforecast", specifier = ">=2.0" },
-    { name = "timesfm", extras = ["torch"], git = "https://github.com/google-research/timesfm.git" },
-    { name = "timestral", git = "https://github.com/mistralai/timestral.git" },
-]
-
-[package.metadata.requires-dev]
-dev = [{ name = "pytest", specifier = ">=8" }]
-
-[[package]]
 name = "patsy"
 version = "1.0.3"
 source = { registry = "https://pypi.org/simple" }
@@ -1495,6 +1452,49 @@ sdist = { url = "https://files.pythonhosted.org/packages/ee/9f/c5201d42a484c061e
 wheels = [
     { url = "https://files.pythonhosted.org/packages/51/e9/3a7820be2bb0fe53b6bc9c3be26d3d1158004e4c3ab953aa6840b955b1e9/truststore-0.10.5-py3-none-any.whl", hash = "sha256:9aaaedaefaf06d8b206278cf8b5012bc897f485a874503501e12d776df78951c", size = 19017, upload-time = "2026-10-12T22:27:30.377Z" },
 ]
+
+[[package]]
+name = "tsbench"
+version = "0.1.0"
+source = { editable = "." }
+dependencies = [
+    { name = "chronos-forecasting" },
+    { name = "jax" },
+    { name = "matplotlib" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "prophet" },
+    { name = "pyarrow" },
+    { name = "requests" },
+    { name = "scikit-learn" },
+    { name = "statsforecast" },
+    { name = "timesfm", extra = ["torch"] },
+    { name = "timestral" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pytest" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "chronos-forecasting", specifier = ">=2.0" },
+    { name = "jax", specifier = ">=0.4" },
+    { name = "matplotlib", specifier = ">=3.9" },
+    { name = "numpy", specifier = ">=1.26" },
+    { name = "pandas", specifier = ">=2.2" },
+    { name = "prophet", specifier = ">=1.1.6" },
+    { name = "pyarrow", specifier = ">=17" },
+    { name = "requests", specifier = ">=2.32" },
+    { name = "scikit-learn", specifier = ">=1.5" },
+    { name = "statsforecast", specifier = ">=2.0" },
+    { name = "timesfm", extras = ["torch"], git = "https://github.com/google-research/timesfm.git" },
+    { name = "timestral", git = "https://github.com/mistralai/timestral.git" },
+]
+
+[package.metadata.requires-dev]
+dev = [{ name = "pytest", specifier = ">=8" }]
 
 [[package]]
 name = "typer"

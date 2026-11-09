@@ -2,9 +2,9 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from pangan.calendar import covariates
-from pangan.metrics import QUANTILES
-from pangan.models import FOUNDATION, MODELS, fill_for_model
+from tsbench.calendar import covariates
+from tsbench.metrics import QUANTILES
+from tsbench.models import FOUNDATION, MODELS, fill_for_model
 
 rng = np.random.default_rng(0)
 idx = pd.date_range("2024-01-01", periods=400, freq="D")

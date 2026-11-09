@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from pangan import pihps
-from pangan.pihps import COMMODITIES, download, fetch_month, parse_grid
+from tsbench import pihps
+from tsbench.pihps import COMMODITIES, download, fetch_month, parse_grid
 
 FIX = Path(__file__).parent / "fixtures" / "pihps_sample.json"
 

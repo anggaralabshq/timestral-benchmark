@@ -9,7 +9,7 @@ import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from pangan.backtest import LEBARAN_WINDOWS
+from tsbench.backtest import LEBARAN_WINDOWS
 
 NAME = {"snaive": "Seasonal naive", "ets": "ETS", "arima": "ARIMA", "prophet": "Prophet",
         "chronos2": "Chronos-2", "timesfm25": "TimesFM 2.5"}

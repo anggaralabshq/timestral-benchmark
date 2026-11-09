@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from pangan.metrics import QUANTILES, coverage, mase, sort_quantiles, wql
+from tsbench.metrics import QUANTILES, coverage, mase, sort_quantiles, wql
 
 
 def test_mase_ignores_nan_targets():

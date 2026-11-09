@@ -1,6 +1,6 @@
 import pandas as pd
 
-from pangan.series import to_daily
+from tsbench.series import to_daily
 
 
 def test_to_daily_fills_calendar_with_nan():

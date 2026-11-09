@@ -1,5 +1,6 @@
 """Backtest rolling-origin. Origin = hari pertama yang diramal; histori = 1024 hari sebelumnya."""
 
+import os
 from concurrent.futures import ProcessPoolExecutor
 from datetime import date, timedelta
 from pathlib import Path
@@ -7,8 +8,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from pangan.calendar import covariates
-from pangan.metrics import EXTRA_Q, QUANTILES, coverage, mase, sort_quantiles, wql
+from tsbench.calendar import covariates
+from tsbench.metrics import EXTRA_Q, QUANTILES, coverage, mase, sort_quantiles, wql
 
 HISTORY = 1024
 HORIZON = 28
@@ -27,8 +28,8 @@ def in_lebaran_window(origin: date) -> bool:
 
 
 def load_series(raw_dir: Path) -> dict[str, pd.Series]:
-    from pangan.pihps import COMMODITIES, load
-    from pangan.series import to_daily
+    from tsbench.pihps import COMMODITIES, load
+    from tsbench.series import to_daily
     df = load(raw_dir)
     return {c: to_daily(df, c) for c in COMMODITIES}
 
@@ -53,12 +54,14 @@ def _one(args) -> pd.DataFrame:
 
 def run(model: str, use_cov: bool, series: dict[str, pd.Series], out_dir: Path, models=None, jobs: int = 1) -> Path:
     if models is None:
-        from pangan.models import MODELS as models
+        from tsbench.models import MODELS as models
     fn, supports = models[model]
     assert supports or not use_cov, f"{model} tidak mendukung covariates"
     last = min(s.dropna().index[-1] for s in series.values()).date()
     tasks = [(fn, use_cov, n, s, o) for n, s in series.items() for o in origins(last)]
     if jobs > 1:  # ponytail: proses paralel hanya untuk model statistik; foundation model sudah multi-thread
+        for k in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "VECLIB_MAXIMUM_THREADS", "NUMBA_NUM_THREADS"):
+            os.environ.setdefault(k, "1")  # worker spawn mewarisi env: 1 thread BLAS per worker, cegah oversubscription
         with ProcessPoolExecutor(jobs) as ex:
             parts = list(ex.map(_one, tasks, chunksize=4))
     else:

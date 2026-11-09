@@ -20,7 +20,7 @@ Timestral, Mistral's time-series foundation model released in October 2026, is r
 This repository answers that for four staple commodities, without taking sides:
 
 - **Four claims, tested one by one.** Accuracy, the benefit of holiday covariates, small-model speed, and interval calibration. Each one ends as *proven*, *partly proven* or *not proven*.
-- **Rules locked before the first run.** Pass and fail thresholds are written in the [design spec](docs/superpowers/specs/2026-11-09-timestral-pangan-design.md) and in `pangan/claims.py`, with tests, before any result existed.
+- **Rules locked before the first run.** Pass and fail thresholds are written in the [design spec](docs/superpowers/specs/2026-11-09-timestral-pangan-design.md) and in `tsbench/claims.py`, with tests, before any result existed.
 - **Fair to the rivals.** Every model gets the same history. Every model that supports covariates runs with and without them, and each rival is scored in its best configuration.
 - **Runs on a laptop.** All models run zero-shot on a MacBook M1 with 8 GB RAM, with no GPU and no cost.
 
@@ -99,7 +99,7 @@ uv sync
 **2. Run the whole benchmark**
 
 ```bash
-uv run python -m pangan all
+uv run python -m tsbench all
 ```
 
 This downloads the PIHPS data, backtests every model, scores them, runs the CPU benchmark, judges the claims and draws the chart. Expect about an hour on an M1 laptop; Timestral-209M with the calendar (17 min) and ARIMAX (11 min) are the slowest steps.
@@ -127,12 +127,12 @@ Each step can run on its own:
 
 | Command | What it does |
 |---|---|
-| `python -m pangan download` | Fetch PIHPS monthly files into `data/raw/` (cached; the current month is always refetched) |
-| `python -m pangan backtest --model NAME [--cov] [--jobs N]` | Rolling-origin backtest for one model, written to `results/forecasts/` |
-| `python -m pangan evaluate` | Per-origin metrics (`results/metrics.csv`) and the summary (`results/summary.csv`) |
-| `python -m pangan speed` | CPU load time and latency of the foundation models (`results/speed.csv`) |
-| `python -m pangan claims` | Claim verdicts (`results/claims.csv`, `results/claims.md`) |
-| `python -m pangan plot` | The headline chart (`results/chart_lebaran_2026.png`) |
+| `python -m tsbench download` | Fetch PIHPS monthly files into `data/raw/` (cached; the current month is always refetched) |
+| `python -m tsbench backtest --model NAME [--cov] [--jobs N]` | Rolling-origin backtest for one model, written to `results/forecasts/` |
+| `python -m tsbench evaluate` | Per-origin metrics (`results/metrics.csv`) and the summary (`results/summary.csv`) |
+| `python -m tsbench speed` | CPU load time and latency of the foundation models (`results/speed.csv`) |
+| `python -m tsbench claims` | Claim verdicts (`results/claims.csv`, `results/claims.md`) |
+| `python -m tsbench plot` | The headline chart (`results/chart_lebaran_2026.png`) |
 
 Model names: `snaive`, `ets`, `arima`, `prophet`, `timestral_5m`, `timestral_209m`, `chronos2`, `timesfm25`. Run each foundation model in its own process to stay within 8 GB of RAM; `all` does this for you.
 
@@ -140,7 +140,7 @@ Model names: `snaive`, `ets`, `arima`, `prophet`, `timestral_5m`, `timestral_209
 
 - **Source: PIHPS Nasional, Bank Indonesia.** Traditional-market prices, national average, working days, 2018-01-01 to 2026-11-09.
 - Commodities: curly red chili (cabai merah keriting), red bird's eye chili (cabai rawit merah), medium shallot (bawang merah), medium-quality rice I (beras medium I).
-- **This repository contains no data.** `python -m pangan download` fetches it from PIHPS's public endpoint, which is undocumented and may change, with a one-second pause between requests. The data is copyright PIHPS / Bank Indonesia.
+- **This repository contains no data.** `python -m tsbench download` fetches it from PIHPS's public endpoint, which is undocumented and may change, with a one-second pause between requests. The data is copyright PIHPS / Bank Indonesia.
 
 ## Participants
 
@@ -171,7 +171,7 @@ Model names: `snaive`, `ets`, `arima`, `prophet`, `timestral_5m`, `timestral_209
 | K3 Small and fast | Timestral-5M is within 10% of the 209M's MASE and is the fastest foundation model per series on CPU |
 | K4 Calibration | 80% intervals cover 75–85% of actual prices and 90% intervals cover 85–95% |
 
-*Partly proven* and *not proven* are defined in [`pangan/claims.py`](pangan/claims.py) and the [spec](docs/superpowers/specs/2026-11-09-timestral-pangan-design.md).
+*Partly proven* and *not proven* are defined in [`tsbench/claims.py`](tsbench/claims.py) and the [spec](docs/superpowers/specs/2026-11-09-timestral-pangan-design.md).
 
 ## Limitations
 
@@ -185,7 +185,7 @@ Model names: `snaive`, `ets`, `arima`, `prophet`, `timestral_5m`, `timestral_209
 ## Development
 
 ```text
-pangan/
+tsbench/
   pihps.py      PIHPS scraper and parser
   series.py     daily series with NaN for missing days
   calendar.py   Indonesian holiday calendar and covariates
