@@ -27,7 +27,7 @@ Pelajaran buat saya:
 
 Catatan jujur: data training model-model ini tidak sepenuhnya dibuka, jadi kemungkinan pernah "melihat" data PIHPS tidak bisa dinolkan untuk model mana pun.
 
-Kode, metodologi, dan semua angka (termasuk yang tidak menguntungkan Timestral): [link repo]
+Kode, metodologi, dan semua angka (termasuk yang tidak menguntungkan Timestral): https://github.com/anggaralabshq/timestral-benchmark
 
 Sumber data: PIHPS Nasional, Bank Indonesia.
 
