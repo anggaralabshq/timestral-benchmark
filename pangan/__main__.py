@@ -19,7 +19,22 @@ def main() -> None:
     sub.add_parser("evaluate", help="hitung metrik dan ringkasan dari results/forecasts")
     sub.add_parser("speed", help="benchmark CPU foundation model (K3)")
     sub.add_parser("claims", help="status klaim K1-K4 dari summary.csv + speed.csv")
+    sub.add_parser("plot", help="grafik utama Lebaran 2026")
+    sub.add_parser("all", help="download -> backtest semua -> evaluate -> speed -> claims -> plot")
     a = p.parse_args()
+    if a.cmd == "all":
+        import subprocess
+        import sys
+        from pangan.models import FOUNDATION, MODELS
+        steps = [["download"]]
+        for name, (_, cov) in MODELS.items():
+            jobs = [] if name in FOUNDATION else ["--jobs", "6"]
+            steps += [["backtest", "--model", name, *jobs]] + ([["backtest", "--model", name, "--cov", *jobs]] if cov else [])
+        steps += [["evaluate"], ["speed"], ["claims"], ["plot"]]
+        for st in steps:  # proses terpisah per langkah: satu foundation model per proses (RAM 8 GB)
+            print(">>", " ".join(st), flush=True)
+            subprocess.run([sys.executable, "-m", "pangan", *st], check=True)
+        return
 
     if a.cmd == "download":
         from pangan.pihps import download
@@ -46,9 +61,15 @@ def main() -> None:
         from pangan.claims import judge
         j = judge(pd.read_csv(RESULTS / "summary.csv"), pd.read_csv(RESULTS / "speed.csv"))
         j.to_csv(RESULTS / "claims.csv", index=False)
-        md = "| Klaim | Status | Bukti |\n|---|---|---|\n" + "".join(f"| {r.claim} | {r.status} | {r.evidence} |\n" for r in j.itertuples())
+        md = "| Claim | Verdict | Evidence |\n|---|---|---|\n" + "".join(f"| {r.claim} | {r.status} | {r.evidence} |\n" for r in j.itertuples())
         (RESULTS / "claims.md").write_text(md)
         print(md)
+    elif a.cmd == "plot":
+        import pandas as pd
+        from pangan.backtest import load_series
+        from pangan.plot import plot
+        print(plot(load_series(RAW), pd.read_csv(RESULTS / "summary.csv"), RESULTS / "forecasts",
+                   RESULTS / "chart_lebaran_2026.png"))
 
 
 if __name__ == "__main__":

@@ -35,61 +35,61 @@ def status(summary, claim, speed=SPEED):
 
 
 def test_k1_terbukti_when_rank1_both_scores():
-    assert status(make_summary(), "K1") == "terbukti"
+    assert status(make_summary(), "K1") == "proven"
 
 
 def test_k1_sebagian_when_rank1_one_score():
-    assert status(make_summary(t209=(0.8, 0.95)), "K1") == "sebagian"
+    assert status(make_summary(t209=(0.8, 0.95)), "K1") == "partly proven"
 
 
 def test_k1_sebagian_when_rank1_only_lebaran():
-    assert status(make_summary(t209=(0.95, 0.95), t209_leb=(0.5, 0.5)), "K1") == "sebagian"
+    assert status(make_summary(t209=(0.95, 0.95), t209_leb=(0.5, 0.5)), "K1") == "partly proven"
 
 
 def test_k1_tidak_when_beaten():
-    assert status(make_summary(t209=(0.95, 0.95), t209_leb=(0.95, 0.95)), "K1") == "tidak terbukti"
+    assert status(make_summary(t209=(0.95, 0.95), t209_leb=(0.95, 0.95)), "K1") == "not proven"
 
 
 def test_k1_uses_rival_best_config():
     s = make_summary()
     s.loc[(s.model == "chronos2") & ~s["cov"], ["rel_mase", "rel_wql"]] = 0.7
-    assert status(s, "K1") == "tidak terbukti"
+    assert status(s, "K1") == "not proven"
 
 
 def test_k1_ignores_other_horizon():
     s = make_summary(t209=(0.95, 0.95), t209_leb=(0.95, 0.95))
     s14 = s.assign(horizon=14)
     s14.loc[(s14.model == "timestral_209m"), ["rel_mase", "rel_wql"]] = 0.1
-    assert status(pd.concat([s, s14]), "K1") == "tidak terbukti"
+    assert status(pd.concat([s, s14]), "K1") == "not proven"
 
 
 def test_k2_terbukti_at_5pct_and_no_harm():
-    assert status(make_summary(t209_leb=(0.75, 0.8), t209_nocov_leb=(0.8, 0.8), t209=(0.81, 0.8)), "K2") == "terbukti"
+    assert status(make_summary(t209_leb=(0.75, 0.8), t209_nocov_leb=(0.8, 0.8), t209=(0.81, 0.8)), "K2") == "proven"
 
 
 def test_k2_sebagian_when_gain_below_5pct():
-    assert status(make_summary(t209_leb=(0.78, 0.8), t209_nocov_leb=(0.8, 0.8)), "K2") == "sebagian"
+    assert status(make_summary(t209_leb=(0.78, 0.8), t209_nocov_leb=(0.8, 0.8)), "K2") == "partly proven"
 
 
 def test_k2_sebagian_when_harms_all_slice():
-    assert status(make_summary(t209_leb=(0.7, 0.8), t209=(0.83, 0.8), t209_nocov=(0.8, 0.8)), "K2") == "sebagian"
+    assert status(make_summary(t209_leb=(0.7, 0.8), t209=(0.83, 0.8), t209_nocov=(0.8, 0.8)), "K2") == "partly proven"
 
 
 def test_k2_tidak_when_no_gain_in_lebaran():
-    assert status(make_summary(t209_leb=(0.8, 0.8), t209_nocov_leb=(0.8, 0.8)), "K2") == "tidak terbukti"
+    assert status(make_summary(t209_leb=(0.8, 0.8), t209_nocov_leb=(0.8, 0.8)), "K2") == "not proven"
 
 
 def test_k3_requires_within_10pct_and_fastest():
-    assert status(make_summary(t5=(0.87, 0.9)), "K3") == "terbukti"
-    assert status(make_summary(t5=(0.9, 0.9)), "K3") == "sebagian"  # 12.5% lebih buruk
+    assert status(make_summary(t5=(0.87, 0.9)), "K3") == "proven"
+    assert status(make_summary(t5=(0.9, 0.9)), "K3") == "partly proven"  # 12.5% lebih buruk
     slow = SPEED.assign(per_series_s=[0.5, 0.2, 0.1, 0.3])
-    assert status(make_summary(t5=(0.9, 0.9)), "K3", slow) == "tidak terbukti"
+    assert status(make_summary(t5=(0.9, 0.9)), "K3", slow) == "not proven"
 
 
 def test_k4_ranges_80_and_90():
-    assert status(make_summary(cov80=0.78, cov90=0.88), "K4") == "terbukti"
-    assert status(make_summary(cov80=0.70, cov90=0.88), "K4") == "sebagian"
-    assert status(make_summary(cov80=0.70, cov90=0.97), "K4") == "tidak terbukti"
+    assert status(make_summary(cov80=0.78, cov90=0.88), "K4") == "proven"
+    assert status(make_summary(cov80=0.70, cov90=0.88), "K4") == "partly proven"
+    assert status(make_summary(cov80=0.70, cov90=0.97), "K4") == "not proven"
 
 
 def test_judge_has_evidence_for_all_claims():

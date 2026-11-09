@@ -1,0 +1,16 @@
+{
+  "name": "pangan-readme-assets",
+  "private": true,
+  "scripts": {
+    "render": "for m in light dark; do remotion still src/index.ts Banner ../banner-$m.png --props=\"{\\\"mode\\\":\\\"$m\\\"}\" && remotion still src/index.ts Diagram ../architecture-$m.png --props=\"{\\\"mode\\\":\\\"$m\\\"}\"; done"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.541",
+    "@remotion/google-fonts": "^4.0.541",
+    "@types/react": "^19.3.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "remotion": "^4.0.541",
+    "typescript": "^7.0.2"
+  }
+}
