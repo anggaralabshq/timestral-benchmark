@@ -31,7 +31,61 @@ This repository answers that for four staple commodities, without taking sides:
 
 ## Results
 
-<!-- RESULTS -->
+Run on 2026-11-09: 93 weekly origins × 4 commodities, 28-day forecasts, MacBook M1 (8 GB), CPU only.
+
+| Claim | Verdict | Evidence |
+|---|---|---|
+| K1 | proven | relative MASE 0.778 vs best rival 0.834 (ets); relative CRPS 0.700 vs 0.735 (timesfm25) |
+| K2 | not proven | with the calendar, Eid-window MASE 0.972 vs 0.885 without (9.8% worse); all origins 0.778 vs 0.795 (2.2% better) |
+| K3 | proven | 5M vs 209M MASE +6.1%; 5M 93 ms per series, fastest: timestral_5m |
+| K4 | proven | 80% interval covers 80.4%; 90% interval covers 91.6% |
+
+**What this means**
+
+- **Timestral-209M is the most accurate model on average.** Its 28-day MASE is 22% below seasonal naive and 7% below the best rival (AutoETS), and its CRPS (0.700) beats the best rival (TimesFM 2.5, 0.735).
+- **Around Eid al-Fitr, no foundation model beats plain AutoETS (0.851).** The holiday calendar made Timestral *worse* in the Eid window (0.972 vs 0.885 without it), even though it helps slightly across the year. The chart below is that window: every model missed the run-up in chili prices.
+- **The 21 MB model is good enough.** Timestral-5M is 6% behind the 209M, still ahead of every non-Timestral model on average, and the fastest at 93 ms per series on CPU. The 209M is the slowest of the four foundation models (1.6 s per series).
+- **Timestral's intervals are honest.** Its 80% and 90% intervals cover 80% and 92% of actual prices. Chronos-2 (65%) and TimesFM 2.5 (70%) are overconfident, and Prophet (42%) much more so.
+
+<img src="results/chart_lebaran_2026.png" width="70%" alt="Red bird's eye chili price before Eid al-Fitr 2026: actual prices rise from about 75 to 94 thousand rupiah per kg, while the Timestral 209M forecast from 2 March falls toward 59 thousand and the AutoETS forecast falls toward 69 thousand; the actual price stays above Timestral's 80% interval from mid-March">
+
+*Commodity and origin were chosen by fixed rules before looking at model results: the chili with the largest pre-Eid jump, and the last Monday at least 14 days before Eid al-Fitr 2026.*
+
+<details>
+<summary><b>Full leaderboard</b> (h=28, relative to seasonal naive, lower is better)</summary>
+
+| Model | Calendar | MASE (all) | CRPS (all) | MASE (Eid window) | 80% cover | 90% cover |
+|---|---|---|---|---|---|---|
+| Timestral-209M | yes | 0.778 | 0.700 | 0.972 | 80% | 92% |
+| Timestral-209M | no | 0.795 | 0.700 | 0.885 | 81% | 92% |
+| Timestral-5M | no | 0.809 | 0.716 | 0.911 | 78% | 88% |
+| Timestral-5M | yes | 0.825 | 0.725 | 1.043 | 75% | 87% |
+| AutoETS | no | 0.834 | 0.856 | 0.851 | 82% | 90% |
+| TimesFM 2.5 | no | 0.843 | 0.735 | 0.944 | 70% | – |
+| AutoARIMA | no | 0.854 | 0.839 | 0.880 | 79% | 86% |
+| AutoARIMA | yes | 0.879 | 0.847 | 0.880 | 79% | 86% |
+| Chronos-2 | no | 0.967 | 0.850 | 1.113 | 65% | 79% |
+| Seasonal naive | no | 1.000 | 1.000 | 1.000 | 79% | 87% |
+| Chronos-2 | yes | 1.024 | 0.909 | 1.274 | 64% | 78% |
+| TimesFM 2.5 | yes | 1.068 | 0.950 | 2.079 | 69% | – |
+| Prophet | no | 2.130 | 1.879 | 2.168 | 42% | 52% |
+| Prophet | yes | 2.232 | 1.972 | 2.333 | 38% | 48% |
+
+</details>
+
+<details>
+<summary><b>CPU speed</b> (MacBook M1, median of 5 runs; one series = 1,024 days of history, 28-day forecast with calendar)</summary>
+
+| Model | Weights | Load | Per series | 4 series |
+|---|---|---|---|---|
+| Timestral-5M | 21 MB | 2.5 s | 93 ms | 0.42 s |
+| Timestral-209M | 837 MB | 3.5 s | 1626 ms | 6.57 s |
+| Chronos-2 | 478 MB | 6.9 s | 490 ms | 1.95 s |
+| TimesFM 2.5 | 925 MB | 5.9 s | 398 ms | 1.57 s |
+
+</details>
+
+**Sensitivity check, not used for the verdicts.** Following the spec, models that accept missing values received NaN on weekends. Chronos-2 does noticeably better with forward-filled input (MASE 0.847, CRPS 0.728), while Timestral does not change (0.794). Even then Chronos-2 stays behind Timestral-209M, so K1 does not change. See `results/sensitivity/summary.csv`.
 
 ## Quick start
 
@@ -48,7 +102,7 @@ uv sync
 uv run python -m pangan all
 ```
 
-This downloads the PIHPS data, backtests every model, scores them, runs the CPU benchmark, judges the claims and draws the chart. Expect 1–2 hours on an M1 laptop, mostly ARIMA and Prophet refits.
+This downloads the PIHPS data, backtests every model, scores them, runs the CPU benchmark, judges the claims and draws the chart. Expect about an hour on an M1 laptop; Timestral-209M with the calendar (17 min) and ARIMAX (11 min) are the slowest steps.
 
 **3. Read the verdict**
 
@@ -126,7 +180,7 @@ Model names: `snaive`, `ets`, `arima`, `prophet`, `timestral_5m`, `timestral_209
 - National level and four commodities only. This is not a general claim about all time series.
 - Speed is measured on one M1 laptop (median of five runs), one series at a time.
 
-<!-- NOTES -->
+**Bug found and fixed during the run.** TimesFM 2.5 without covariates first scored 4.87× seasonal naive. The adapter read the first rows of TimesFM's output, which with `return_backcast=True` are the backcast (prices about three years old), not the forecast. It now reads the tail, a regression test covers it, and the TimesFM run was repeated before the verdicts above. TimesFM *with* covariates (XReg) was not affected; its weaker score is its own.
 
 ## Development
 
