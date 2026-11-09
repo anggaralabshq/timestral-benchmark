@@ -13,7 +13,7 @@ Mistral just released Timestral. I put it against Chronos-2, TimesFM 2.5, ARIMA,
 ✅ Its 80% interval really covers 80% of actual prices
 ❌ The Eid spike: no model saw it coming, and adding the holiday calendar made Timestral ~10% worse
 
-So the new model wins on average and misses the one week that matters most.
+So the new model wins on average and misses the weeks that matter most.
 
 Takeaway: small foundation models are now a solid default baseline. Just don't trust one average number; test the period your business actually cares about.
 
