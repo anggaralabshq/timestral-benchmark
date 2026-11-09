@@ -11,6 +11,7 @@
 
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue?logo=python&logoColor=white)](pyproject.toml)
 [![Runs on CPU](https://img.shields.io/badge/hardware-CPU%20only%2C%20no%20GPU-orange)](#methodology)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Data: PIHPS](https://img.shields.io/badge/data-PIHPS%20%C2%B7%20Bank%20Indonesia-lightgrey)](#data)
 
 </div>
@@ -212,4 +213,4 @@ docs/assets/remotion/   source for the README images (npm install && npm run ren
 
 ## License
 
-The code license will be added before this repository goes public. Model weights and data keep their own licenses, listed above.
+The code is released under the [MIT License](LICENSE). Model weights and data keep their own licenses, listed above; the MIT license does not cover them, and PIHPS data is not redistributed here.

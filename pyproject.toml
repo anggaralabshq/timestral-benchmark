@@ -3,6 +3,7 @@ name = "tsbench"
 version = "0.1.0"
 description = "Benchmark Timestral vs model forecasting lain pada harga pangan Indonesia (PIHPS)"
 requires-python = ">=3.12,<3.13"
+license = "MIT"
 dependencies = [
     "pandas>=2.2",
     "numpy>=1.26",
