@@ -4,16 +4,18 @@ Image: `results/chart_lebaran_2026.png`
 
 ---
 
-Mistral's Timestral vs Chronos-2, TimesFM 2.5, ARIMA, ETS and Prophet. I tested them on Indonesian daily food prices from PIHPS (chili, shallot, rice), zero-shot, on a laptop with no GPU.
+Every year before Eid, chili prices in Indonesia jump. Could the newest time-series AI see it coming?
 
-4 claims, rules locked before the experiment ran:
+Mistral just released Timestral. I put it against Chronos-2, TimesFM 2.5, ARIMA, ETS and Prophet on daily PIHPS food prices (chili, shallot, rice). Zero-shot, on a laptop, no GPU. Rules locked before the first run.
 
-✅ Most accurate: error 7% below the best rival (ETS)
+✅ Most accurate overall: error 7% below the best rival (ETS)
 ✅ The 5M version (21 MB) is only 6% behind the 209M, at 93 ms per series on CPU
 ✅ Its 80% interval really covers 80% of actual prices
-❌ Adding the Eid holiday calendar made error ~10% worse. No model caught the chili price spike before Eid
+❌ The Eid spike: no model saw it coming, and adding the holiday calendar made Timestral ~10% worse
 
-Takeaway: small foundation models are now a solid default baseline. But don't trust one average number; check the period that matters most for your business.
+So the new model wins on average and misses the one week that matters most.
+
+Takeaway: small foundation models are now a solid default baseline. Just don't trust one average number; test the period your business actually cares about.
 
 Code and every number, including the ones that don't favour Timestral:
 https://github.com/anggaralabshq/timestral-benchmark
