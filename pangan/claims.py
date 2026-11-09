@@ -40,7 +40,10 @@ def _k2(s):
     all_c, all_n = _get(s, "timestral_209m", True, "all").rel_mase, _get(s, "timestral_209m", False, "all").rel_mase
     gain, harm = 1 - leb_c / leb_n, all_c / all_n - 1
     status = "not proven" if gain <= 0 else "proven" if gain >= 0.05 and harm <= 0.02 else "partly proven"
-    return status, f"calendar covariates: MASE {gain:+.1%} better in the Eid window; {harm:+.1%} error change across all origins"
+    def word(x):
+        return f"{abs(x):.1%} {'better' if x > 0 else 'worse'}"
+    return status, (f"with the calendar, Eid-window MASE {leb_c:.3f} vs {leb_n:.3f} without ({word(gain)}); "
+                    f"all origins {all_c:.3f} vs {all_n:.3f} ({word(-harm)})")
 
 
 def _k3(s, speed):

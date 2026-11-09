@@ -68,8 +68,9 @@ def main() -> None:
         import pandas as pd
         from pangan.backtest import load_series
         from pangan.plot import plot
-        print(plot(load_series(RAW), pd.read_csv(RESULTS / "summary.csv"), RESULTS / "forecasts",
-                   RESULTS / "chart_lebaran_2026.png"))
+        series, summary = load_series(RAW), pd.read_csv(RESULTS / "summary.csv")
+        for lang, name in (("en", "chart_lebaran_2026.png"), ("id", "chart_lebaran_2026_id.png")):
+            print(plot(series, summary, RESULTS / "forecasts", RESULTS / name, lang=lang))
 
 
 if __name__ == "__main__":

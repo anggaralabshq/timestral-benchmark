@@ -26,9 +26,10 @@ def _loader(model: str):
 
 
 def _file_mb(repo: str) -> float:
-    from huggingface_hub import snapshot_download
-    d = Path(snapshot_download(repo, local_files_only=True))
-    return sum(f.stat().st_size for f in d.rglob("*") if f.suffix in {".safetensors", ".bin", ".ckpt", ".pt"}) / 1e6
+    from huggingface_hub import scan_cache_dir
+    r = next(r for r in scan_cache_dir().repos if r.repo_id == repo)
+    rev = max(r.revisions, key=lambda v: v.last_modified)
+    return sum(f.size_on_disk for f in rev.files if Path(f.file_name).suffix in {".safetensors", ".bin", ".ckpt", ".pt"}) / 1e6
 
 
 def speed(model: str, series: dict[str, pd.Series], runs: int = 5) -> dict:

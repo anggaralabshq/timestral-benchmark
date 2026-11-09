@@ -156,7 +156,7 @@ def timesfm25(history, horizon, cov=None):
     y = fill_for_model(history).to_numpy(dtype=float)  # TimesFM tidak menerima NaN
     if cov is None:
         _, q = m.forecast(horizon=horizon, inputs=[y])
-        q = q[0][:horizon]
+        q = q[0][-horizon:]  # return_backcast=True: output = backcast + forecast; forecast is the tail
     else:
         idx = history.index.append(_future_index(history, horizon))
         dyn = {c: [cov.loc[idx, c].to_numpy(dtype=float)] for c in cov.columns}

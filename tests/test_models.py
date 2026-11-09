@@ -38,3 +38,17 @@ def test_fill_for_model_has_no_nan():
     s = hist.copy()
     s.iloc[0] = np.nan
     assert fill_for_model(s).notna().all()
+
+
+TREND = pd.Series(np.linspace(20000, 60000, 1024), index=pd.date_range("2023-01-01", periods=1024, freq="D"))
+
+
+@pytest.mark.slow
+@pytest.mark.parametrize("name", sorted(FOUNDATION))
+@pytest.mark.parametrize("use_cov", [False, True])
+def test_foundation_forecast_continues_from_last_value(name, use_cov):
+    # Regression: TimesFM with return_backcast=True returned the backcast's first rows (prices ~3 years old)
+    fn, _ = MODELS[name]
+    cov = covariates(pd.date_range(TREND.index[0], periods=1024 + 28, freq="D")) if use_cov else None
+    out = fn(TREND, 28, cov)
+    assert abs(out[0.5].iloc[0] / TREND.iloc[-1] - 1) < 0.05

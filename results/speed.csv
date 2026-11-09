@@ -1,0 +1,5 @@
+model,file_mb,load_s,per_series_s,batch_all_s,machine
+timestral_5m,20.8,2.49,0.09259129100246355,0.4157616249867715,arm / macOS-26.1-arm64-arm-64bit
+timestral_209m,837.3,3.55,1.6259476670238655,6.568087499996182,arm / macOS-26.1-arm64-arm-64bit
+chronos2,477.9,6.91,0.4898191670072265,1.9511562499974389,arm / macOS-26.1-arm64-arm-64bit
+timesfm25,925.2,5.9,0.39844645900302567,1.5699255830259062,arm / macOS-26.1-arm64-arm-64bit
